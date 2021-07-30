@@ -108,11 +108,49 @@ cty@data <- merge(BRTE, cty@data, by="GEOID")
 NC <- cty@data %>%
   filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
 
+NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
 
+
+ggplot(NC) +
+  geom_sf()
+
+
+
+
+
+
+
+dataProjected@data$id <- rownames(dataProjected@data)
+watershedPoints <- fortify(dataProjected, region = "id")
+watershedDF <- merge(watershedPoints, dataProjected@data, by = "id")
+
+
+
+
+
+NC@data$id <- rownames(NC@data)
+watershedPoints <- fortify(NC, region = "id")
+NCDF <- merge(watershedPoints, NC@data, by = "id")
+
+ggNC <- ggplot(data = NCDF, aes(x=long, y=lat, fill = Future_Models_Sum)) +
+  geom_polygon()
+ggNC
+
+head(srg@data)
+NCstate <- srg@data %>%
+  filter(STUSPS == "CO"|STUSPS == "KS"|STUSPS == "NE"|STUSPS == "WY"|STUSPS == "SD"|STUSPS == "ND"|STUSPS == "MT")
+
+
+plot(NCstate)
 plot(NC)
+head(NC)
+str(NC)
 
+ggplot()+ 
+  geom_polygon(data=NC, aes(INTPTLON, INTPTLAT, color = Future_Models_Sum))
 
-
+#par(mar=c(1,1,1,1))
+dev.off()
 
 #join all together
 grassesa <- rbind(BRTE, IMCY)
