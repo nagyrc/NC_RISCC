@@ -2,6 +2,8 @@
 #R. Chelsea Nagy, Emily Fusco, Jenica Allen
 
 library(rgdal)
+library(sf)
+library(tidyverse)
 
 abbrev <- "CO" # set state of interest 
 
@@ -34,7 +36,7 @@ plot(chosen_state, col = "red", add = T) #all code above works
 #### GET LIST OF GEOID IN CHOSEN STATE
 
 ### read in county shapefile
-cty=readOGR("data/US_counties//WGS84_clip.shp", layer="WGS84_clip")
+cty <- readOGR("data/US_counties//WGS84_clip.shp", layer="WGS84_clip")
 proj4string(cty) #"+proj=longlat +datum=WGS84 +no_defs "
 head(cty@data)
 #plot(cty) this works but takes forever
@@ -80,3 +82,45 @@ length(unique(cty_select$CountyName))
 #now have county info by state
 
 #bring in grass info
+BRTE <- read.csv(file = 'data/BRTE_countytable.csv')
+IMCY <- read.csv(file = 'data/IMCY_countytable.csv')
+MISI <- read.csv(file = 'data/MISI_countytable.csv')
+MIVI <- read.csv(file = 'data/MIVI_countytable.csv')
+NERE <- read.csv(file = 'data/NERE_countytable.csv')
+PECI <- read.csv(file = 'data/PECI_countytable.csv')
+SCBA <- read.csv(file = 'data/SCBA_countytable.csv')
+TACA <- read.csv(file = 'data/TACA8_countytable.csv')
+
+
+#add state names to cty
+#county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
+cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
+
+#merge grass data
+head(cty@data)
+head(BRTE)
+BRTE$GEOID <- as.factor(BRTE$GEOID)
+is.factor(BRTE$GEOID)
+cty@data <- merge(BRTE, cty@data, by="GEOID")
+
+
+#subset to NC region
+NC <- cty@data %>%
+  filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
+
+
+plot(NC)
+
+
+
+
+#join all together
+grassesa <- rbind(BRTE, IMCY)
+grassesb <- rbind(grassesa, MISI)
+grassesc <- rbind(grassesb, MIVI)
+grassesd <- rbind(grassesc, NERE)
+grassese <- rbind(grassesd, PECI)
+grassesf <- rbind(grassese, SCBA)
+grasses <- rbind(grassesf, TACA)
+
+head(grasses)
