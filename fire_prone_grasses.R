@@ -103,6 +103,18 @@ cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
 NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
 #460 observations
 
+NC2 <- NC@data %>%
+  filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
+#396 observations; not sure why the discrepancy
+
+NC2$lat <- sub('.', '', NC2$INTPTLAT)
+NC2$long <- sub('.', '', NC2$INTPTLON)
+NC2$long <- str_remove(NC2$long, "^0+")
+
+ggplot(data = NC2) +
+  geom_polygon(aes(x = long, y = lat, color = Future_Models_Sum))
+
+
 #merge grass data
 head(NC@data)
 head(BRTE)
@@ -120,7 +132,7 @@ ggplot(NC) +
 
 #plot(NC)
 
-
+NCsf <-st_as_sf(NC)
 NCdf <- SpatialPolygonsDataFrame_to_df(NC, vars = names(NC))
 
 
