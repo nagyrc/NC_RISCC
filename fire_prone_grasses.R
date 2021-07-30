@@ -95,6 +95,39 @@ SCBA <- read.csv(file = 'data/SCBA_countytable.csv')
 TACA <- read.csv(file = 'data/TACA8_countytable.csv')
 
 
+
+BRTE$Future_Models_Sum_BRTE <- BRTE$Future_Models_Sum
+IMCY$Future_Models_Sum_IMCY <- IMCY$Future_Models_Sum
+MISI$Future_Models_Sum_MISI <- MISI$Future_Models_Sum
+MIVI$Future_Models_Sum_MIVI <- MIVI$Future_Models_Sum
+NERE$Future_Models_Sum_NERE <- NERE$Future_Models_Sum
+PECI$Future_Models_Sum_PECI <- PECI$Future_Models_Sum
+SCBA$Future_Models_Sum_SCBA <- SCBA$Future_Models_Sum
+TACA$Future_Models_Sum_TACA <- TACA$Future_Models_Sum
+
+BRTEkeep <- BRTE %>% select(1, 20)
+IMCYkeep <- IMCY %>% select(1, 20)
+MISIkeep <- MISI %>% select(1, 20)
+MIVIkeep <- MIVI %>% select(1, 20)
+NEREkeep <- NERE %>% select(1, 20)
+PECIkeep <- PECI %>% select(1, 20)
+SCBAkeep <- SCBA %>% select(1, 20)
+TACAkeep <- TACA %>% select(1, 20)
+
+grassesa <- left_join(BRTEkeep, IMCYkeep, by = "GEOID")
+grassesb <- left_join(grassesa, MISIkeep, by = "GEOID")
+grassesc <- left_join(grassesb, MIVIkeep, by = "GEOID")
+grassesd <- left_join(grassesc, NEREkeep, by = "GEOID")
+grassese <- left_join(grassesd, PECIkeep, by = "GEOID")
+grassesf <- left_join(grassese, SCBAkeep, by = "GEOID")
+grasses <- left_join(grassesf, TACAkeep, by = "GEOID")
+
+#sum all models
+grasses$totinvfire <- grasses$Future_Models_Sum_BRTE + grasses$Future_Models_Sum_IMCY + 
+  grasses$Future_Models_Sum_MISI + grasses$Future_Models_Sum_MIVI + grasses$Future_Models_Sum_NERE +
+  grasses$Future_Models_Sum_PECI + grasses$Future_Models_Sum_SCBA + grasses$Future_Models_Sum_TACA
+  
+
 #add state names to cty
 #county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
 cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
@@ -117,12 +150,12 @@ ggplot(data = NC2) +
 
 #merge grass data
 head(NC@data)
-head(BRTE)
-BRTE$GEOID <- as.factor(BRTE$GEOID)
-is.factor(BRTE$GEOID)
+head(grasses)
+grasses$GEOID <- as.factor(grasses$GEOID)
+is.factor(grasses$GEOID)
 
-#add cheatgrass
-NC@data <- merge(BRTE, NC@data, by="GEOID")
+#add all grasses
+NC@data <- merge(grasses, NC@data, by="GEOID")
 
 
 
