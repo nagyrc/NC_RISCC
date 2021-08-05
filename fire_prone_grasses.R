@@ -43,6 +43,8 @@ cty <- readOGR("data/US_counties//WGS84_clip.shp", layer="WGS84_clip")
 proj4string(cty) #"+proj=longlat +datum=WGS84 +no_defs "
 head(cty@data)
 #plot(cty) this works but takes forever
+crs(cty)
+
 
 counties <- as.data.frame(cbind(as.character(cty@data$GEOID), as.character(cty@data$NAMELSAD), as.character(cty@data$STATEFP)), stringsAsFactors = F)
 colnames(counties) <- c("GEOID", "CountyName", "STATEFP")
@@ -222,7 +224,7 @@ GEOIDs <- NC2$GEOID
 
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
-#396 observations
+#396 observations; maybe only had grass data for 396 of the 460 counties?
          
 countygrasses <- left_join(grassesNC, NC2, by = "GEOID")
 
@@ -230,9 +232,18 @@ write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FA
 
 
 
+head(cty@data)
 
 
+NCsub <- cty@data %>%
+  dplyr::filter(GEOID %in% GEOIDs)
 
+#well, this is obviously not correct
+plot(NC)
+
+polys <- df_to_SpatialPolygons(countygrasses,"GEOID",c("long","lat"), CRS("+proj=longlat +datum=WGS84 +no_defs "))
+#Error in attributes(out) <- attributes(col) : 
+#'names' attribute [396] must be the same length as the vector [1]
 
 
 ####
