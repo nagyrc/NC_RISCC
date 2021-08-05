@@ -78,11 +78,15 @@ counties2 <- counties1[2:3109, ] #remove junk row from object creation
 head(counties2)
 dim(counties2)
 
+###don't need this
 cty_select <- counties2[counties2$State == abbrev, ] #get list of counties in chosen state
 head(cty_select)
 dim(cty_select)
 length(unique(cty_select$CountyName))
 #now have county info by state
+###
+
+
 
 #bring in grass info for each species
 BRTE <- read.csv(file = 'data/BRTE_countytable.csv')
@@ -183,13 +187,17 @@ grasses <- grasses %>%
 grasses <- grasses %>%
   mutate(totexpander = expander_BRTE+expander_IMCY+expander_MISI+expander_MIVI+expander_NERE+expander_PECI+expander_SCBA+expander_TACA)
 
+write.table(grasses, file = "grasses.csv", sep = ",", row.names = FALSE)
+
 
 #add state names to cty
 #county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
 cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
 
+head(cty@data)
+
 #subset to NC
-NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
+#NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
 #460 observations
 
 NC2 <- NC@data %>%
@@ -200,6 +208,22 @@ NC2$lat <- sub('.', '', NC2$INTPTLAT)
 NC2$long <- sub('.', '', NC2$INTPTLON)
 NC2$long <- str_remove(NC2$long, "^0+")
 
+head(NC2)
+
+NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
+write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
+
+
+grasses$GEOID <-as.factor(grasses$GEOID)
+is.factor(NC2$GEOID)
+is.factor(grasses$GEOID)
+countygrasses <- left_join(NC2, grasses, by = "GEOID")
+
+write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
+
+
+####
+#plotting
 ggplot(data = NC2) +
   geom_polygon(aes(x = long, y = lat, color = Future_Models_Sum))
 
