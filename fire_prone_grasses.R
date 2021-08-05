@@ -213,29 +213,33 @@ head(NC2)
 NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
 write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
 
-
+#something happens here in this join step and all grass data becomes NA
 grasses$GEOID <-as.factor(grasses$GEOID)
 is.factor(NC2$GEOID)
 is.factor(grasses$GEOID)
-countygrasses <- left_join(NC2, grasses, by = "GEOID")
+
+GEOIDs <- NC2$GEOID
+
+grassesNC <- grasses %>%
+  filter(GEOID %in% GEOIDs)
+#396 observations
+         
+countygrasses <- left_join(grassesNC, NC2, by = "GEOID")
 
 write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
 
 
+
+
+
+
+
+
 ####
 #plotting
-ggplot(data = NC2) +
-  geom_polygon(aes(x = long, y = lat, color = Future_Models_Sum))
+ggplot(data = countygrasses) +
+  geom_polygon(aes(x = long, y = lat, color = totfuture))
 
-
-#merge grass data
-head(NC@data)
-head(grasses)
-grasses$GEOID <- as.factor(grasses$GEOID)
-is.factor(grasses$GEOID)
-
-#add all grasses
-NC@data <- merge(grasses, NC@data, by="GEOID")
 
 
 
@@ -380,12 +384,3 @@ ggplot()+
 
 #par(mar=c(1,1,1,1))
 dev.off()
-
-#join all together
-grassesa <- rbind(BRTE, IMCY)
-grassesb <- rbind(grassesa, MISI)
-grassesc <- rbind(grassesb, MIVI)
-grassesd <- rbind(grassesc, NERE)
-grassese <- rbind(grassesd, PECI)
-grassesf <- rbind(grassese, SCBA)
-grasses <- rbind(grassesf, TACA)
