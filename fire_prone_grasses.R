@@ -94,25 +94,75 @@ PECI <- read.csv(file = 'data/PECI_countytable.csv')
 SCBA <- read.csv(file = 'data/SCBA_countytable.csv')
 TACA <- read.csv(file = 'data/TACA8_countytable.csv')
 
+#didn't get the for loop to run
+species <- list('BRTE', 'IMCY', 'MISI', 'MIVI', 'NERE', 'PECI', 'SCBA', 'TACA')
+species
+
+is.factor(species)
+
+#manually swap out i to loop through the species dataframes
+i <- TACA
+
+for (i in species) {
+#create new column for future agreement in 11 or more models
+  BRTE <- BRTE %>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0))
+
+#create a zero 1 column for current observations
+  BRTE <- BRTE %>% 
+  mutate (expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0))
+
+  BRTE <- BRTE %>% 
+  mutate (retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0))
+
+  BRTE <- BRTE %>% 
+  mutate (persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+}
+
+#BRTE$Future_Models_Sum_BRTE <- BRTE$Future_Models_Sum
+#IMCY$Future_Models_Sum_IMCY <- IMCY$Future_Models_Sum
+#MISI$Future_Models_Sum_MISI <- MISI$Future_Models_Sum
+#MIVI$Future_Models_Sum_MIVI <- MIVI$Future_Models_Sum
+#NERE$Future_Models_Sum_NERE <- NERE$Future_Models_Sum
+#PECI$Future_Models_Sum_PECI <- PECI$Future_Models_Sum
+#SCBA$Future_Models_Sum_SCBA <- SCBA$Future_Models_Sum
+#TACA$Future_Models_Sum_TACA <- TACA$Future_Models_Sum
+
+BRTEkeep <- BRTE %>% select(1, 5, 20:23)
+IMCYkeep <- IMCY %>% select(1, 5, 20:23)
+MISIkeep <- MISI %>% select(1, 5, 20:23)
+MIVIkeep <- MIVI %>% select(1, 5, 20:23)
+NEREkeep <- NERE %>% select(1, 5, 20:23)
+PECIkeep <- PECI %>% select(1, 5, 20:23)
+SCBAkeep <- SCBA %>% select(1, 5, 20:23)
+TACAkeep <- TACA %>% select(1, 5, 20:23)
+
+BRTEkeep <- BRTEkeep %>% rename(current_BRTE = sppRichCtyBias_current, future85_BRTE = future85, 
+                        expander_BRTE = expander, retractor_BRTE = retractor, persistant_BRTE = persistant)
+
+IMCYkeep <- IMCYkeep %>% rename(current_IMCY = sppRichCtyBias_current, future85_IMCY = future85, 
+                                expander_IMCY = expander, retractor_IMCY = retractor, persistant_IMCY = persistant)
+
+MISIkeep <- MISIkeep %>% rename(current_MISI = sppRichCtyBias_current, future85_MISI = future85, 
+                                expander_MISI = expander, retractor_MISI = retractor, persistant_MISI = persistant)
+
+MIVIkeep <- MIVIkeep %>% rename(current_MIVI = sppRichCtyBias_current, future85_MIVI = future85, 
+                                expander_MIVI = expander, retractor_MIVI = retractor, persistant_MIVI = persistant)
+
+NEREkeep <- NEREkeep %>% rename(current_NERE = sppRichCtyBias_current, future85_NERE = future85, 
+                                expander_NERE = expander, retractor_NERE = retractor, persistant_NERE = persistant)
+
+PECIkeep <- PECIkeep %>% rename(current_PECI = sppRichCtyBias_current, future85_PECI = future85, 
+                                expander_PECI = expander, retractor_PECI = retractor, persistant_PECI = persistant)
+
+SCBAkeep <- SCBAkeep %>% rename(current_SCBA = sppRichCtyBias_current, future85_SCBA = future85, 
+                                expander_SCBA = expander, retractor_SCBA = retractor, persistant_SCBA = persistant)
+
+TACAkeep <- TACAkeep %>% rename(current_TACA = sppRichCtyBias_current, future85_TACA = future85, 
+                                expander_TACA = expander, retractor_TACA = retractor, persistant_TACA = persistant)
 
 
-BRTE$Future_Models_Sum_BRTE <- BRTE$Future_Models_Sum
-IMCY$Future_Models_Sum_IMCY <- IMCY$Future_Models_Sum
-MISI$Future_Models_Sum_MISI <- MISI$Future_Models_Sum
-MIVI$Future_Models_Sum_MIVI <- MIVI$Future_Models_Sum
-NERE$Future_Models_Sum_NERE <- NERE$Future_Models_Sum
-PECI$Future_Models_Sum_PECI <- PECI$Future_Models_Sum
-SCBA$Future_Models_Sum_SCBA <- SCBA$Future_Models_Sum
-TACA$Future_Models_Sum_TACA <- TACA$Future_Models_Sum
 
-BRTEkeep <- BRTE %>% select(1, 20)
-IMCYkeep <- IMCY %>% select(1, 20)
-MISIkeep <- MISI %>% select(1, 20)
-MIVIkeep <- MIVI %>% select(1, 20)
-NEREkeep <- NERE %>% select(1, 20)
-PECIkeep <- PECI %>% select(1, 20)
-SCBAkeep <- SCBA %>% select(1, 20)
-TACAkeep <- TACA %>% select(1, 20)
 
 grassesa <- left_join(BRTEkeep, IMCYkeep, by = "GEOID")
 grassesb <- left_join(grassesa, MISIkeep, by = "GEOID")
@@ -122,11 +172,17 @@ grassese <- left_join(grassesd, PECIkeep, by = "GEOID")
 grassesf <- left_join(grassese, SCBAkeep, by = "GEOID")
 grasses <- left_join(grassesf, TACAkeep, by = "GEOID")
 
-#sum all models
-grasses$totinvfire <- grasses$Future_Models_Sum_BRTE + grasses$Future_Models_Sum_IMCY + 
-  grasses$Future_Models_Sum_MISI + grasses$Future_Models_Sum_MIVI + grasses$Future_Models_Sum_NERE +
-  grasses$Future_Models_Sum_PECI + grasses$Future_Models_Sum_SCBA + grasses$Future_Models_Sum_TACA
-  
+#sum all grasses
+grasses <- grasses %>%
+  mutate(totfuture = future85_BRTE+future85_IMCY+future85_MISI+future85_MIVI+future85_NERE+future85_PECI+future85_SCBA+future85_TACA)
+
+
+grasses <- grasses %>%
+  mutate(totcurrent = current_BRTE+current_IMCY+current_MISI+current_MIVI+current_NERE+current_PECI+current_SCBA+current_TACA)
+
+grasses <- grasses %>%
+  mutate(totexpander = expander_BRTE+expander_IMCY+expander_MISI+expander_MIVI+expander_NERE+expander_PECI+expander_SCBA+expander_TACA)
+
 
 #add state names to cty
 #county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
