@@ -90,6 +90,38 @@ length(unique(cty_select$CountyName))
 
 
 
+#add state names to cty
+#county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
+cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
+
+head(cty@data)
+
+#subset to NC
+#NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
+#460 observations
+
+NC2 <- cty@data %>%
+  filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
+#460 observations
+
+NC2$lat <- sub('.', '', NC2$INTPTLAT)
+NC2$long <- sub('.', '', NC2$INTPTLON)
+NC2$long <- str_remove(NC2$long, "^0+")
+
+head(NC2)
+
+NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
+write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
+write.table(NC2keep, file = "NC2keep.csv", sep = ",", row.names = FALSE)
+
+
+
+
+
+########################################
+
+
+
 #bring in grass info for each species
 BRTE <- read.csv(file = 'data/BRTE_countytable.csv')
 IMCY <- read.csv(file = 'data/IMCY_countytable.csv')
@@ -192,28 +224,8 @@ grasses <- grasses %>%
 write.table(grasses, file = "grasses.csv", sep = ",", row.names = FALSE)
 
 
-#add state names to cty
-#county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
-cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
-
-head(cty@data)
-
-#subset to NC
-#NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
-#460 observations
-
-NC2 <- NC@data %>%
-  filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
-#396 observations; not sure why the discrepancy
-
-NC2$lat <- sub('.', '', NC2$INTPTLAT)
-NC2$long <- sub('.', '', NC2$INTPTLON)
-NC2$long <- str_remove(NC2$long, "^0+")
-
-head(NC2)
-
-NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
-write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
+######################################
+#join grasses to counties
 
 #something happens here in this join step and all grass data becomes NA
 grasses$GEOID <-as.factor(grasses$GEOID)
@@ -224,9 +236,10 @@ GEOIDs <- NC2$GEOID
 
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
-#396 observations; maybe only had grass data for 396 of the 460 counties?
+#396 observations; maybe only had grass data for 396 of the 460 counties? or only had 396 matching GEOIDs???
          
-countygrasses <- left_join(grassesNC, NC2, by = "GEOID")
+countygrasses <- left_join(grassesNC, NC2keep, by = "GEOID")
+#396 observations
 
 write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
 
@@ -239,7 +252,7 @@ NCsub <- cty@data %>%
   dplyr::filter(GEOID %in% GEOIDs)
 
 #well, this is obviously not correct
-plot(NC)
+plot(NCsub)
 
 polys <- df_to_SpatialPolygons(countygrasses,"GEOID",c("long","lat"), CRS("+proj=longlat +datum=WGS84 +no_defs "))
 #Error in attributes(out) <- attributes(col) : 
