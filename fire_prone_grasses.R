@@ -80,6 +80,9 @@ counties2 <- counties1[2:3109, ] #remove junk row from object creation
 head(counties2)
 dim(counties2)
 
+#now have GEOID, county name, and state together
+
+
 ###don't need this
 cty_select <- counties2[counties2$State == abbrev, ] #get list of counties in chosen state
 head(cty_select)
@@ -229,10 +232,10 @@ write.table(grasses, file = "grasses.csv", sep = ",", row.names = FALSE)
 
 #something happens here in this join step and all grass data becomes NA
 grasses$GEOID <-as.factor(grasses$GEOID)
-is.factor(NC2$GEOID)
+is.factor(NC2keep$GEOID)
 is.factor(grasses$GEOID)
 
-GEOIDs <- NC2$GEOID
+GEOIDs <- NC2keep$GEOID
 
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
@@ -242,6 +245,18 @@ countygrasses <- left_join(grassesNC, NC2keep, by = "GEOID")
 #396 observations
 
 write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
+
+
+countygrassesslim <- countygrasses %>% select(1, 42:44, 46, 48)
+
+colnames(countygrassesslim)[colnames(countygrassesslim) == 'NAME'] <- 'CountyName'
+write.table(countygrassesslim, file = "countygrassesslim.csv", sep = ",", row.names = FALSE)
+
+
+
+
+
+
 
 
 
