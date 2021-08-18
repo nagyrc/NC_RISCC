@@ -118,7 +118,17 @@ write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
 write.table(NC2keep, file = "NC2keep.csv", sep = ",", row.names = FALSE)
 
 
+checkstates <- unique(NC2$State)
+#has all 7 states
 
+
+CO <- NC2keep %>%
+  filter(State == "CO")
+#64 counties in CO
+
+COGEOIDs <- CO$GEOID
+COGEOIDs
+is.factor(COGEOIDs)  
 
 
 ########################################
@@ -231,29 +241,47 @@ write.table(grasses, file = "grasses.csv", sep = ",", row.names = FALSE)
 #join grasses to counties
 
 #something happens here in this join step and all grass data becomes NA
-grasses$GEOID <-as.factor(grasses$GEOID)
+#grasses$GEOID <-as.factor(grasses$GEOID)
 is.factor(NC2keep$GEOID)
 is.factor(grasses$GEOID)
 
+#NC2keep$GEOID <- as.numeric(NC2keep$GEOID)
+
 GEOIDs <- NC2keep$GEOID
+GEOIDs
+
+
+#checkgeoid <- unique(NC2keep$GEOID)
+#460
+
+unique(grasses$GEOID)
 
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
-#396 observations; maybe only had grass data for 396 of the 460 counties? or only had 396 matching GEOIDs???
-         
+#396 observations
+#lost 64 counties from CO
+
+grassesCO <- grasses %>%
+  dplyr::filter(GEOID %>% COGEOIDs)
+
+
+grassesCO <- grasses %>%
+  filter(state == "CO")
+
+
 countygrasses <- left_join(grassesNC, NC2keep, by = "GEOID")
 #396 observations
 
 write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
 
 
-countygrassesslim <- countygrasses %>% select(1, 42:44, 46, 48)
+countygrassesslim <- countygrasses %>% select(1, 42:44, 46)
 
-colnames(countygrassesslim)[colnames(countygrassesslim) == 'NAME'] <- 'CountyName'
+#colnames(countygrassesslim)[colnames(countygrassesslim) == 'NAME'] <- 'CountyName'
 write.table(countygrassesslim, file = "countygrassesslim.csv", sep = ",", row.names = FALSE)
 
 
-
+statesinNC <- unique(countygrassesslim$State)
 
 
 
