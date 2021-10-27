@@ -210,6 +210,8 @@ TACA<- TACA%>%
           retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
           persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
 
+
+############################################################
 ### copy only; did not get for loop to run
 species <- list('BRTE', 'IMCY', 'MISI', 'MIVI', 'NERE', 'PECI', 'SCBA', 'TACA')
 species
@@ -217,19 +219,14 @@ species
 for (i in species) {
 #create new column for future agreement in 11 or more models
   i <- i %>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0))
-
-#create a zero 1 column for current observations
-  i <- i %>% 
-  mutate (expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0))
-
-  i <- i %>% 
-  mutate (retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0))
-
-  i <- i %>% 
-  mutate (persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+    mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+            expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+            retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+            persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
 }
-###
+############################################################
+
+
 #BRTE$Future_Models_Sum_BRTE <- BRTE$Future_Models_Sum
 #IMCY$Future_Models_Sum_IMCY <- IMCY$Future_Models_Sum
 #MISI$Future_Models_Sum_MISI <- MISI$Future_Models_Sum
@@ -341,7 +338,7 @@ GEOIDs
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
 #460 observations
-#lost 64 counties from CO
+
 
 #grassesCO <- grasses %>%
   #dplyr::filter(GEOID %>% COGEOIDs)
@@ -357,27 +354,27 @@ grassesNC <- grasses %>%
 write.table(grassesNC, file = "countygrasses.csv", sep = ",", row.names = FALSE)
 
 head(grassesNC)
-countygrassesslim <- grassesNC %>% select(1, 42:45)
+#countygrassesslim <- grassesNC %>% select(1, 42:45)
 
 #colnames(countygrassesslim)[colnames(countygrassesslim) == 'NAME'] <- 'CountyName'
-write.table(countygrassesslim, file = "countygrassesslim.csv", sep = ",", row.names = FALSE)
+#write.table(countygrassesslim, file = "countygrassesslim.csv", sep = ",", row.names = FALSE)
 
 
 #statesinNC <- unique(countygrassesslim$State)
 
 ##################################
 head(countieskeep)
-head(countygrassesslim)
+#head(countygrassesslim)
 
 is.numeric(countieskeep$GEOID) #FALSE
-is.numeric(countygrassesslim$GEOID) #FALSE
+#is.numeric(countygrassesslim$GEOID) #FALSE
 
 is.factor(countieskeep$GEOID) #FALSE
-is.factor(countygrassesslim$GEOID) #FALSE
+#is.factor(countygrassesslim$GEOID) #FALSE
 
 is.character(countieskeep$GEOID) #TRUE
-is.character(countygrassesslim$GEOID) #TRUE
-
+#is.character(countygrassesslim$GEOID) #TRUE
+is.character(grassesNC$GEOID) #TRUE
 
 
 #now need to map counties with grass info
@@ -388,7 +385,7 @@ head(cty@data)
 NC <- cty@data %>%
   filter(GEOID %in% GEOIDs)
 
-plot(NC)
+#plot(NC)
 
 
 
@@ -397,7 +394,7 @@ plot(NC)
 
 
 out_file2 <- read_sf('data/US_counties/WGS84_clip.shp') %>%
-  left_join(., countygrassesslim, by = c('GEOID')) %>%
+  left_join(., grassesNC, by = c('GEOID')) %>%
   filter(GEOID %in% GEOIDs) %>%
   mutate(change = totexpander - totretractor)
 
@@ -407,7 +404,50 @@ out_file2 <- read_sf('data/US_counties/WGS84_clip.shp') %>%
 head(out_file2)
 str(out_file2)
 
+### individual species
+color_expander <- brewer.pal(n=3, name = "Reds") #3 is the minimum
+color_expander
 
+species
+head(out_file2)
+
+out_file2$expander_BRTE = factor(out_file2$expander_BRTE, levels = c(0, 1))
+out_file2$expander_IMCY = factor(out_file2$expander_IMCY, levels = c(0, 1))
+out_file2$expander_MISI = factor(out_file2$expander_MISI, levels = c(0, 1))
+out_file2$expander_MIVI = factor(out_file2$expander_MIVI, levels = c(0, 1))
+out_file2$expander_NERE = factor(out_file2$expander_NERE, levels = c(0, 1))
+out_file2$expander_PECI = factor(out_file2$expander_PECI, levels = c(0, 1))
+out_file2$expander_SCBA = factor(out_file2$expander_SCBA, levels = c(0, 1))
+out_file2$expander_TACA = factor(out_file2$expander_TACA, levels = c(0, 1))
+
+
+#check
+summary(grassesNC$expander_BRTE)
+summary(grassesNC$expander_IMCY)
+summary(grassesNC$expander_MISI)
+summary(grassesNC$expander_MIVI)
+summary(grassesNC$expander_NERE)
+summary(grassesNC$expander_PECI)
+summary(grassesNC$expander_SCBA)
+summary(grassesNC$expander_TACA)
+
+
+#change this line 
+pal <- colorRampPalette(color_expander)
+
+plot(out_file2[23], pal = pal) #no expansion
+plot(out_file2[28], pal = pal) #no expansion
+plot(out_file2[33], pal = pal) #no expansion
+plot(out_file2[38], pal = pal)
+plot(out_file2[43], pal = pal) #no expansion
+plot(out_file2[48], pal = pal) #no expansion
+plot(out_file2[53], pal = pal)
+plot(out_file2[58], pal = pal)
+
+###
+
+
+### species totals
 color_status <- brewer.pal(n = 5, name = "Purples")
 color_status
 
@@ -421,8 +461,10 @@ out_file2$totcurrent = factor(out_file2$totcurrent, levels = c(0, 1, 2, 3, 4))
 
 plot(out_file2[22], pal = pal)
 plot(out_file2[21], pal = pal)
+###
 
 
+###
 color_expander <- brewer.pal(n=5, name = "Reds")
 color_expander
 
@@ -433,9 +475,10 @@ out_file2$totexpander = factor(out_file2$totexpander, levels = c(0, 1, 2, 3))
 pal <- colorRampPalette(color_expander)
 
 plot(out_file2[23], pal = pal)
+###
 
 
-
+###
 color_retractor <- brewer.pal(n=5, name = "Blues")
 color_retractor
 
@@ -445,11 +488,11 @@ out_file2$totretractor <- factor(out_file2$totretractor, levels = c(0, 1, 2, 3))
 pal <- colorRampPalette(color_retractor)
 
 plot(out_file2[24], pal = pal)
+###
 
 
 
-
-
+###
 color_change <- brewer.pal(n=5, name = "RdBu")
 color_change
 
@@ -459,6 +502,8 @@ out_file2$change <- factor(out_file2$change, levels = c(2, 1, 0, -1, -2))
 pal <- colorRampPalette(color_change)
 
 plot(out_file2[25], pal = pal)
+###
+
 
 
 summary(out_file2$change)
