@@ -7,6 +7,8 @@ library(tidyverse)
 library(ggplot2)
 library(maptools)
 library(FRK)
+#library(broom)
+library(RColorBrewer)
 
 abbrev <- "CO" # set state of interest 
 
@@ -23,20 +25,22 @@ head(srg@data)
 states <- as.data.frame(cbind(as.character(srg@data$STUSPS), as.character(srg@data$STATEFP), as.character(srg@data$NAME)), stringsAsFactors = F)
 states
 
+NC <- 
+
 head(states)
 str(states)
 colnames(states) <- c("Abbrev", "STATEFP", "State")
 
 ## subset spatial data to state of interest
-chosen_state <- srg[grep(abbrev, srg$STUSPS),]
-chosen_statefp <- as.character(chosen_state@data$STATEFP)
+#chosen_state <- srg[grep(abbrev, srg$STUSPS),]
+#chosen_statefp <- as.character(chosen_state@data$STATEFP)
 
 ## check map for accurate subsetting
-plot(srg)
-plot(chosen_state, col = "red", add = T) #all code above works
+#plot(srg)
+#plot(chosen_state, col = "red", add = T) #all code above works
 
 
-#### GET LIST OF GEOID IN CHOSEN STATE
+
 
 ### read in county shapefile
 cty <- readOGR("data/US_counties//WGS84_clip.shp", layer="WGS84_clip")
@@ -53,82 +57,93 @@ str(counties)
 dim(counties)
 
 
+countieskeep <- left_join(counties, states)
+head(countieskeep)
+
+#filter counties to NC
+NC3 <- countieskeep %>%
+  filter(Abbrev == "CO"|Abbrev == "KS"|Abbrev == "NE"|Abbrev == "WY"|Abbrev == "SD"|Abbrev == "ND"|Abbrev == "MT")
+#460 observations
+
+########################################
+#remove
 ## county table does not include state name, add state names for ease of use
 ## create data object to catch output in loop
-counties1 <- cbind("99999", "Example County", "XX", "XX")
-colnames(counties1) <- c("GEOID", "CountyName", "STATEFP", "State")
-counties1
+#counties1 <- cbind("99999", "Example County", "XX", "XX")
+#colnames(counties1) <- c("GEOID", "CountyName", "STATEFP", "State")
+#counties1
 
 
-for (i in unique(counties$STATEFP)){
+#for (i in unique(counties$STATEFP)){
   
-  sub = counties[counties$STATEFP == i, ] #subsets counties of single state
-  sub1 = unique(states$Abbrev[states$STATEFP == i]) # returns single state abbreviation
+  #sub = counties[counties$STATEFP == i, ] #subsets counties of single state
+  #sub1 = unique(states$Abbrev[states$STATEFP == i]) # returns single state abbreviation
   
-  sub$State <- sub1 #adds state abbreviation to all counties in subset
+  #sub$State <- sub1 #adds state abbreviation to all counties in subset
   
-  counties1 <- rbind(counties1, sub) #appends new data to county level dataset
+  #counties1 <- rbind(counties1, sub) #appends new data to county level dataset
   
-  print(paste(sub1, "done", " "))
+  #print(paste(sub1, "done", " "))
   
-}
+#}
 
-head(counties1)
-dim(counties1)
+#head(counties1)
+#dim(counties1)
 
-counties2 <- counties1[2:3109, ] #remove junk row from object creation
-head(counties2)
-dim(counties2)
+#counties2 <- counties1[2:3109, ] #remove junk row from object creation
+#head(counties2)
+#dim(counties2)
 
 #now have GEOID, county name, and state together
 
 
 ###don't need this
-cty_select <- counties2[counties2$State == abbrev, ] #get list of counties in chosen state
-head(cty_select)
-dim(cty_select)
-length(unique(cty_select$CountyName))
+#cty_select <- counties2[counties2$State == abbrev, ] #get list of counties in chosen state
+#head(cty_select)
+#dim(cty_select)
+#length(unique(cty_select$CountyName))
 #now have county info by state
 ###
 
-
+##################################################
 
 #add state names to cty
 #county_shape@data <- merge(county_info, county_shape@data, by="GEOID", all.x=TRUE)
-cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
+#cty@data <- merge(counties2, cty@data, by=c("GEOID", "STATEFP"), all.x=TRUE)
 
-head(cty@data)
+#head(cty@data)
 
 #subset to NC
 #NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
 #460 observations
 
-NC2 <- cty@data %>%
-  filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
+#NC2 <- cty@data %>%
+  #filter(State == "CO"|State == "KS"|State == "NE"|State == "WY"|State == "SD"|State == "ND"|State == "MT")
 #460 observations
+  
 
-NC2$lat <- sub('.', '', NC2$INTPTLAT)
-NC2$long <- sub('.', '', NC2$INTPTLON)
-NC2$long <- str_remove(NC2$long, "^0+")
+#NC2$lat <- sub('.', '', NC2$INTPTLAT)
+#NC2$long <- sub('.', '', NC2$INTPTLON)
+#NC2$long <- str_remove(NC2$long, "^0+")
 
-head(NC2)
+#head(NC2)
 
-NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
-write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
-write.table(NC2keep, file = "NC2keep.csv", sep = ",", row.names = FALSE)
+#NC2keep <- NC2 %>% select(1, 2, 4, 5, 7, 20:23)
+#write.table(NC2, file = "NC2.csv", sep = ",", row.names = FALSE)
+#write.table(NC2keep, file = "NC2keep.csv", sep = ",", row.names = FALSE)
 
 
-checkstates <- unique(NC2$State)
+#checkstates <- unique(NC2$State)
 #has all 7 states
 
 
-CO <- NC2keep %>%
-  filter(State == "CO")
+#CO <- NC2keep %>%
+  #filter(State == "CO")
 #64 counties in CO
 
-COGEOIDs <- CO$GEOID
-COGEOIDs
-is.factor(COGEOIDs)  
+#COGEOIDs <- CO$GEOID
+#COGEOIDs
+#is.factor(COGEOIDs)  
 
 
 ########################################
@@ -156,17 +171,17 @@ i <- TACA
 
 for (i in species) {
 #create new column for future agreement in 11 or more models
-  BRTE <- BRTE %>% 
+  TACA <- TACA %>% 
   mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0))
 
 #create a zero 1 column for current observations
-  BRTE <- BRTE %>% 
+  TACA <- TACA %>% 
   mutate (expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0))
 
-  BRTE <- BRTE %>% 
+  TACA <- TACA %>% 
   mutate (retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0))
 
-  BRTE <- BRTE %>% 
+  TACA <- TACA %>% 
   mutate (persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
 }
 
@@ -234,60 +249,215 @@ grasses <- grasses %>%
 grasses <- grasses %>%
   mutate(totexpander = expander_BRTE+expander_IMCY+expander_MISI+expander_MIVI+expander_NERE+expander_PECI+expander_SCBA+expander_TACA)
 
+grasses <- grasses %>%
+  mutate(totretractor = retractor_BRTE+retractor_IMCY+retractor_MISI+retractor_MIVI+retractor_NERE+retractor_PECI+retractor_SCBA+retractor_TACA)
+
 write.table(grasses, file = "grasses.csv", sep = ",", row.names = FALSE)
 
 
 ######################################
 #join grasses to counties
 
-#something happens here in this join step and all grass data becomes NA
-#grasses$GEOID <-as.factor(grasses$GEOID)
-is.factor(NC2keep$GEOID)
-is.factor(grasses$GEOID)
+#first check GEOIDs
+#is.numeric(NC3$GEOID) #FALSE
+#is.numeric(grasses$GEOID) #TRUE
 
-#NC2keep$GEOID <- as.numeric(NC2keep$GEOID)
+#is.character(NC3$GEOID) #TRUE
 
-GEOIDs <- NC2keep$GEOID
+#grassesnum <- grasses
+
+#convert GEOID to numeric
+#grassesnum$GEOID <- as.numeric(grassesnum$GEOID)
+
+#is.numeric(grassesnum$GEOID)
+
+
+
+
+
+#add leading zeros to GEOIDs
+## identify GEOIDs that need leading zeros added
+grasses$digits <- nchar(grasses$GEOID)
+#table(final.table$digits)
+grasses$digits
+
+## add leading zeros where needed, otherwise replicate GEOID
+grasses$GEOID[grasses$digits == 4] <- paste(0, grasses$GEOID[grasses$digits == 4], sep = "")
+
+table(nchar(grasses$GEOID)) #verify that all FIPS are 5 digits
+
+
+
+
+#subset to NC
+GEOIDs <- NC3$GEOID
 GEOIDs
-
-
-#checkgeoid <- unique(NC2keep$GEOID)
-#460
-
-unique(grasses$GEOID)
 
 grassesNC <- grasses %>%
   filter(GEOID %in% GEOIDs)
-#396 observations
+#460 observations
 #lost 64 counties from CO
 
-grassesCO <- grasses %>%
-  dplyr::filter(GEOID %>% COGEOIDs)
+#grassesCO <- grasses %>%
+  #dplyr::filter(GEOID %>% COGEOIDs)
 
 
-grassesCO <- grasses %>%
-  filter(state == "CO")
+#grassesCO <- grasses %>%
+  #filter(state == "CO")
 
 
-countygrasses <- left_join(grassesNC, NC2keep, by = "GEOID")
+#countygrasses <- left_join(grassesNC, NC2keep, by = "GEOID")
 #396 observations
 
-write.table(countygrasses, file = "countygrasses.csv", sep = ",", row.names = FALSE)
+write.table(grassesNC, file = "countygrasses.csv", sep = ",", row.names = FALSE)
 
-
-countygrassesslim <- countygrasses %>% select(1, 42:44, 46)
+head(grassesNC)
+countygrassesslim <- grassesNC %>% select(1, 42:45)
 
 #colnames(countygrassesslim)[colnames(countygrassesslim) == 'NAME'] <- 'CountyName'
 write.table(countygrassesslim, file = "countygrassesslim.csv", sep = ",", row.names = FALSE)
 
 
-statesinNC <- unique(countygrassesslim$State)
+#statesinNC <- unique(countygrassesslim$State)
+
+##################################
+head(countieskeep)
+head(countygrassesslim)
+
+is.numeric(countieskeep$GEOID) #FALSE
+is.numeric(countygrassesslim$GEOID) #FALSE
+
+is.factor(countieskeep$GEOID) #FALSE
+is.factor(countygrassesslim$GEOID) #FALSE
+
+is.character(countieskeep$GEOID) #TRUE
+is.character(countygrassesslim$GEOID) #TRUE
+
+
+
+#now need to map counties with grass info
+head(cty@data)
+
+#NC <- cty[cty@data$State == "CO"|cty@data$State == "KS"|cty@data$State == "NE"|cty@data$State == "WY"|cty@data$State == "SD"|cty@data$State == "ND"|cty@data$State == "MT",]
+
+NC <- cty@data %>%
+  filter(GEOID %in% GEOIDs)
+
+plot(NC)
+
+
+
+#out_file <- NC %>%
+  #left_join (., countygrassesslim, by = c('GEOID'))
+
+
+out_file2 <- read_sf('data/US_counties/WGS84_clip.shp') %>%
+  left_join(., countygrassesslim, by = c('GEOID')) %>%
+  filter(GEOID %in% GEOIDs) %>%
+  mutate(change = totexpander - totretractor)
+
+
+
+
+head(out_file2)
+str(out_file2)
+
+
+color_status <- brewer.pal(n = 5, name = "Purples")
+color_status
+
+
+
+#change this line 
+pal <- colorRampPalette(color_status, levels = lev)
+
+out_file2$totfuture = factor(out_file2$totfuture, levels = c(0, 1, 2, 3, 4))
+out_file2$totcurrent = factor(out_file2$totcurrent, levels = c(0, 1, 2, 3, 4))
+
+plot(out_file2[22], pal = pal)
+plot(out_file2[21], pal = pal)
+
+
+color_expander <- brewer.pal(n=5, name = "Reds")
+color_expander
+
+out_file2$totexpander = factor(out_file2$totexpander, levels = c(0, 1, 2, 3))
+
+
+#change this line 
+pal <- colorRampPalette(color_expander)
+
+plot(out_file2[23], pal = pal)
+
+
+
+color_retractor <- brewer.pal(n=5, name = "Blues")
+color_retractor
+
+out_file2$totretractor <- factor(out_file2$totretractor, levels = c(0, 1, 2, 3))
+
+#change this line 
+pal <- colorRampPalette(color_retractor)
+
+plot(out_file2[24], pal = pal)
+
+
+
+
+
+color_change <- brewer.pal(n=5, name = "RdBu")
+color_change
+
+out_file2$change <- factor(out_file2$change, levels = c(2, 1, 0, -1, -2))
+
+#change this line 
+pal <- colorRampPalette(color_change)
+
+plot(out_file2[25], pal = pal)
+
+
+summary(out_file2$change)
+summary(out_file2$totexpander)
+summary(out_file2$totretractor)
+
+#End script here
+#########################
 
 
 
 
 
 
+
+
+#writeOGR(outfile2, 'data/countygrasses.shp', overwrite=TRUE)
+
+td <- file.path("/Users/rana7082/Documents/research/NC_RISCC/data/")
+writeOGR(out_file2, td, "countygrasses", driver="ESRI Shapefile")
+#writeOGR(cities, td, "cities", driver="ESRI Shapefile")
+
+
+spdf_fortified <- tidy(NC, region = "Shape_Area")
+
+library(ggplot2)
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = INTPTLON, y = INTPTLAT, group = group), fill="#69b3a2", color="white") +
+  theme_void() 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################################################
 head(cty@data)
 
 
