@@ -160,31 +160,76 @@ PECI <- read.csv(file = 'data/PECI_countytable.csv')
 SCBA <- read.csv(file = 'data/SCBA_countytable.csv')
 TACA <- read.csv(file = 'data/TACA8_countytable.csv')
 
-#didn't get the for loop to run
+
+
+BRTE <- BRTE %>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  
+IMCY<- IMCY%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+MISI<- MISI%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+MIVI<- MIVI%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+NERE<- NERE%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+PECI<- PECI%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+SCBA<- SCBA%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+TACA<- TACA%>% 
+  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
+          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+
+### copy only; did not get for loop to run
 species <- list('BRTE', 'IMCY', 'MISI', 'MIVI', 'NERE', 'PECI', 'SCBA', 'TACA')
 species
 
-is.factor(species)
-
-#manually swap out i to loop through the species dataframes
-i <- TACA
-
 for (i in species) {
 #create new column for future agreement in 11 or more models
-  TACA <- TACA %>% 
+  i <- i %>% 
   mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0))
 
 #create a zero 1 column for current observations
-  TACA <- TACA %>% 
+  i <- i %>% 
   mutate (expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0))
 
-  TACA <- TACA %>% 
+  i <- i %>% 
   mutate (retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0))
 
-  TACA <- TACA %>% 
+  i <- i %>% 
   mutate (persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
 }
-
+###
 #BRTE$Future_Models_Sum_BRTE <- BRTE$Future_Models_Sum
 #IMCY$Future_Models_Sum_IMCY <- IMCY$Future_Models_Sum
 #MISI$Future_Models_Sum_MISI <- MISI$Future_Models_Sum
