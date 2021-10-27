@@ -222,7 +222,7 @@ for (i in species) {
     mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
             expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
             retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-            persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+            persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
 }
 ############################################################
 
@@ -246,28 +246,28 @@ SCBAkeep <- SCBA %>% select(1, 5, 20:23)
 TACAkeep <- TACA %>% select(1, 5, 20:23)
 
 BRTEkeep <- BRTEkeep %>% rename(current_BRTE = sppRichCtyBias_current, future85_BRTE = future85, 
-                        expander_BRTE = expander, retractor_BRTE = retractor, persistant_BRTE = persistant)
+                        expander_BRTE = expander, retractor_BRTE = retractor, persistent_BRTE = persistent)
 
 IMCYkeep <- IMCYkeep %>% rename(current_IMCY = sppRichCtyBias_current, future85_IMCY = future85, 
-                                expander_IMCY = expander, retractor_IMCY = retractor, persistant_IMCY = persistant)
+                                expander_IMCY = expander, retractor_IMCY = retractor, persistent_IMCY = persistent)
 
 MISIkeep <- MISIkeep %>% rename(current_MISI = sppRichCtyBias_current, future85_MISI = future85, 
-                                expander_MISI = expander, retractor_MISI = retractor, persistant_MISI = persistant)
+                                expander_MISI = expander, retractor_MISI = retractor, persistent_MISI = persistent)
 
 MIVIkeep <- MIVIkeep %>% rename(current_MIVI = sppRichCtyBias_current, future85_MIVI = future85, 
-                                expander_MIVI = expander, retractor_MIVI = retractor, persistant_MIVI = persistant)
+                                expander_MIVI = expander, retractor_MIVI = retractor, persistent_MIVI = persistent)
 
 NEREkeep <- NEREkeep %>% rename(current_NERE = sppRichCtyBias_current, future85_NERE = future85, 
-                                expander_NERE = expander, retractor_NERE = retractor, persistant_NERE = persistant)
+                                expander_NERE = expander, retractor_NERE = retractor, persistent_NERE = persistent)
 
 PECIkeep <- PECIkeep %>% rename(current_PECI = sppRichCtyBias_current, future85_PECI = future85, 
-                                expander_PECI = expander, retractor_PECI = retractor, persistant_PECI = persistant)
+                                expander_PECI = expander, retractor_PECI = retractor, persistent_PECI = persistent)
 
 SCBAkeep <- SCBAkeep %>% rename(current_SCBA = sppRichCtyBias_current, future85_SCBA = future85, 
-                                expander_SCBA = expander, retractor_SCBA = retractor, persistant_SCBA = persistant)
+                                expander_SCBA = expander, retractor_SCBA = retractor, persistent_SCBA = persistent)
 
 TACAkeep <- TACAkeep %>% rename(current_TACA = sppRichCtyBias_current, future85_TACA = future85, 
-                                expander_TACA = expander, retractor_TACA = retractor, persistant_TACA = persistant)
+                                expander_TACA = expander, retractor_TACA = retractor, persistent_TACA = persistent)
 
 
 
@@ -405,6 +405,7 @@ head(out_file2)
 str(out_file2)
 
 ### individual species
+#expansion
 color_expander <- brewer.pal(n=3, name = "Reds") #3 is the minimum
 color_expander
 
@@ -444,7 +445,59 @@ plot(out_file2[48], pal = pal) #no expansion
 plot(out_file2[53], pal = pal)
 plot(out_file2[58], pal = pal)
 
+
+
+
+
+
+
+
+#persistence
 ###
+color_persistent <- brewer.pal(n=3, name = "Reds") #3 is the minimum
+color_persistent
+
+species
+head(out_file2)
+str(out_file2)
+
+out_file2$persistent_BRTE = factor(out_file2$persistent_BRTE, levels = c(0, 1))
+out_file2$persistent_IMCY = factor(out_file2$persistent_IMCY, levels = c(0, 1))
+out_file2$persistent_MISI = factor(out_file2$persistent_MISI, levels = c(0, 1))
+out_file2$persistent_MIVI = factor(out_file2$persistent_MIVI, levels = c(0, 1))
+out_file2$persistent_NERE = factor(out_file2$persistent_NERE, levels = c(0, 1))
+out_file2$persistent_PECI = factor(out_file2$persistent_PECI, levels = c(0, 1))
+out_file2$persistent_SCBA = factor(out_file2$persistent_SCBA, levels = c(0, 1))
+out_file2$persistent_TACA = factor(out_file2$persistent_TACA, levels = c(0, 1))
+
+
+#check
+summary(grassesNC$persistent_BRTE) #persistent
+summary(grassesNC$persistent_IMCY) #not persistent
+summary(grassesNC$persistent_MISI) #not persistent
+summary(grassesNC$persistent_MIVI) #persistent
+summary(grassesNC$persistent_NERE) #not persistent
+summary(grassesNC$persistent_PECI) #not persistent
+summary(grassesNC$persistent_SCBA) #not persistent
+summary(grassesNC$persistent_TACA) #persistent
+
+
+#change this line 
+pal <- colorRampPalette(color_persistant)
+
+plot(out_file2[25], pal = pal) #persistent
+plot(out_file2[30], pal = pal) 
+plot(out_file2[35], pal = pal) 
+plot(out_file2[40], pal = pal) #persistent
+plot(out_file2[45], pal = pal) 
+plot(out_file2[50], pal = pal) 
+plot(out_file2[55], pal = pal)
+plot(out_file2[60], pal = pal) #persistent
+
+
+
+
+
 
 
 ### species totals
