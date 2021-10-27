@@ -10,7 +10,7 @@ library(FRK)
 #library(broom)
 library(RColorBrewer)
 
-abbrev <- "CO" # set state of interest 
+#abbrev <- "CO" # set state of interest 
 
 ### SUBSET MAP TO SELECTED STATE
 
