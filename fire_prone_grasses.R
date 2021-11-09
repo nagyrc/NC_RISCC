@@ -163,52 +163,52 @@ TACA <- read.csv(file = 'data/TACA8_countytable.csv')
 
 
 BRTE <- BRTE %>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
   
 IMCY<- IMCY%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 MISI<- MISI%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 MIVI<- MIVI%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 NERE<- NERE%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 PECI<- PECI%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 SCBA<- SCBA%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 TACA<- TACA%>% 
-  mutate (future85= ifelse(((Future_Models_Sum>=11)), 1, 0),
-          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=11)), 1, 0), 
-          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<11)), 1, 0),
-          persistant= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=11)), 1, 0))
+  mutate (future85= ifelse(((Future_Models_Sum>=7)), 1, 0),
+          expander= ifelse(((sppRichCtyBias_current== 0 & Future_Models_Sum>=7)), 1, 0), 
+          retractor= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum<7)), 1, 0),
+          persistent= ifelse(((sppRichCtyBias_current== 1 & Future_Models_Sum>=7)), 1, 0))
 
 
 ############################################################
@@ -474,7 +474,7 @@ out_file2$persistent_TACA = factor(out_file2$persistent_TACA, levels = c(0, 1))
 #check
 summary(grassesNC$persistent_BRTE) #persistent
 summary(grassesNC$persistent_IMCY) #not persistent
-summary(grassesNC$persistent_MISI) #not persistent
+summary(grassesNC$persistent_MISI) #persistent; this changes with 7 models in agreement vs. 11
 summary(grassesNC$persistent_MIVI) #persistent
 summary(grassesNC$persistent_NERE) #not persistent
 summary(grassesNC$persistent_PECI) #not persistent
@@ -487,7 +487,7 @@ pal <- colorRampPalette(color_persistant)
 
 plot(out_file2[25], pal = pal) #persistent
 plot(out_file2[30], pal = pal) 
-plot(out_file2[35], pal = pal) 
+plot(out_file2[35], pal = pal) #persistent; this changes with 7 models in agreement vs. 11
 plot(out_file2[40], pal = pal) #persistent
 plot(out_file2[45], pal = pal) 
 plot(out_file2[50], pal = pal) 
@@ -764,3 +764,4 @@ ggplot()+
 
 #par(mar=c(1,1,1,1))
 dev.off()
+
