@@ -765,3 +765,6 @@ ggplot()+
 #par(mar=c(1,1,1,1))
 dev.off()
 
+library(geoNEON)
+
+citation(package = "geoNEON")
